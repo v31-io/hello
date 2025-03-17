@@ -12,7 +12,9 @@ services:
 
 
   frontend:
-    build: frontend
+    build: 
+      context: frontend
+      target: production
     depends_on:
       - backend
     restart: always
