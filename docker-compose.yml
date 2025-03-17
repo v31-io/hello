@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: backend
+    restart: always
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_USER=hello
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api || exit 1" ]
+      start_period: 5s
+
+
+  frontend:
+    build: frontend
+    depends_on:
+      - backend
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/ || exit 1" ]
+      start_period: 5s
+    

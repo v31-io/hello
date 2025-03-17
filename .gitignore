@@ -1,0 +1,8 @@
+# VS Code user preferences
+.vscode
+
+# Credentials
+.env
+
+# Node modules
+node_modules

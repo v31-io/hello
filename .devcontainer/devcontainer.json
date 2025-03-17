@@ -1,0 +1,35 @@
+{
+	// https://aka.ms/devcontainer.json
+	"name": "Development",
+
+	// https://github.com/devcontainers/images/tree/main/src
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+
+	"runArgs": ["--device=/dev/net/tun"],
+
+	// https://github.com/devcontainers/features/tree/main/src
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest",
+			"enableNonRootDocker": "true",
+			"moby": "true"
+		},
+		"ghcr.io/devcontainers/features/node": {},
+		// Use `tailscale up --accept-routes` to enable tailscale
+		"ghcr.io/tailscale/codespace/tailscale": {}
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "sudo apt-get -qq update && sudo apt-get install -y -qq yq",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mhutchie.git-graph",
+				"mutantdino.resourcemonitor",
+				"github.vscode-github-actions"
+			]
+		}
+	}
+}
