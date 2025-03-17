@@ -3,6 +3,9 @@ import cors from 'cors';
 import express from 'express';
 import { createClient } from '@redis/client';
 
+import { config } from 'dotenv';
+config();
+
 // Check redis connection
 const redisCredentials = {
   username: process.env.REDIS_USER,

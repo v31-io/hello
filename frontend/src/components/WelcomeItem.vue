@@ -1,13 +1,17 @@
+<script setup>
+defineProps(['icon', 'heading', 'content'])
+</script>
+
 <template>
   <div class="item">
     <i>
-      <slot name="icon"></slot>
+      <component :is="icon" />
     </i>
     <div class="details">
       <h3>
-        <slot name="heading"></slot>
+        {{ heading }}
       </h3>
-      <slot></slot>
+      {{ content }}
     </div>
   </div>
 </template>
