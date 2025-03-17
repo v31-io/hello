@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || ''
 let welcomeItemsData = ref([{
   icon: markRaw(DocumentationIcon),
   heading: 'Hello',
-  content: 'Hallo'
+  content: 'Halloooo'
 }, {
   icon: markRaw(ToolingIcon),
   heading: 'World',

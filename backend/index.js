@@ -40,6 +40,10 @@ app.get('/api', (req, res) => {
     {
       "id":"3",
       "title":"Show Review: Alice in Borderland"
+    },
+    {
+      "id":"4",
+      "title":"Lord of the rings"
     }
   ])
 })
