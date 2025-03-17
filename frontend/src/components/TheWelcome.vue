@@ -4,6 +4,8 @@ import WelcomeItem from './WelcomeItem.vue'
 import DocumentationIcon from './icons/IconDocumentation.vue'
 import ToolingIcon from './icons/IconTooling.vue'
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || ''
+
 let welcomeItemsData = ref([{
   icon: markRaw(DocumentationIcon),
   heading: 'Hello',
@@ -15,7 +17,7 @@ let welcomeItemsData = ref([{
 }])
 
 // Fetch data from backend
-fetch(`http://${import.meta.env.VITE_BACKEND_URL}/api`)
+fetch(`${API_URL}/api`)
   .then(response => response.json())
   .then(backendItems => {
     backendItems.forEach(item => {
