@@ -1,5 +1,8 @@
 FROM node:lts-slim
     
+RUN apt-get update && \
+    apt-get install -y wget
+
 # Set the working directory in the container
 WORKDIR /app
 
