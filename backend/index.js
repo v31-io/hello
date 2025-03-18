@@ -20,7 +20,9 @@ const client = await createClient(redisCredentials)
   .connect();
 
 await client.lPush("hello:hello", Date.now().toString());
-await client.disconnect();
+let value = await client.lRange("hello:hello", 0, 0);
+console.log(`Value from Redis: ${value}`);
+await client.disconnect(); 
 
 const app = express();
 

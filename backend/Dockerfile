@@ -1,8 +1,4 @@
-FROM node:23-slim
-
-# For some reason this is required to help resolve Tailsacle hostname
-RUN apt-get update && \
-    apt-get install -y wget
+FROM node:lts-slim
     
 # Set the working directory in the container
 WORKDIR /app
