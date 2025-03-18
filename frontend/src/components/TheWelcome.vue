@@ -13,7 +13,7 @@ let welcomeItemsData = ref([{
 }, {
   icon: markRaw(ToolingIcon),
   heading: 'World',
-  content: 'Worldo'
+  content: 'Worldoo'
 }])
 
 // Fetch data from backend
