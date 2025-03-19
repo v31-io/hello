@@ -1,6 +1,7 @@
 import morgan from "morgan";
 import cors from "cors";
 import express from "express";
+import cookieParser from "cookie-parser";
 import { createClient } from "@redis/client";
 
 import { config } from "dotenv";
@@ -28,6 +29,25 @@ const app = express();
 
 app.use(cors());
 app.use(morgan("combined"));
+app.use(cookieParser());
+
+// set a cookie
+app.use(function (req, res, next) {
+  // check if client sent cookie
+  var cookie = req.cookies.sessionID;
+  if (cookie === undefined) {
+    // no: set a new cookie
+    var randomNumber=Math.random().toString();
+    randomNumber=randomNumber.substring(2,randomNumber.length);
+    res.cookie('sessionID',randomNumber, { maxAge: 900000, httpOnly: true });
+    console.log('cookie created successfully');
+  } else {
+    // yes, cookie was already present 
+    console.log('cookie exists', cookie);
+  } 
+  
+  next();
+});
 
 app.get("/", (req, res) => {
   res.json([
