@@ -1,47 +1,29 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+  import { computed, ref } from 'vue'
+  import { useUserStore } from '@/stores/user'
+  
+  import LoginPage from './components/LoginPage.vue'
+  import ChatPage from './components/ChatPage.vue'
+
+  const theme = ref('dark')
+  const user = useUserStore()
+  const page = computed(() => user.id ? ChatPage : LoginPage)
+
+  function onClickTheme () {
+    theme.value = theme.value === 'light' ? 'dark' : 'light'
+  }
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <v-app :theme="theme">
+    <v-app-bar>
+      <v-app-bar-title>Hello Chat</v-app-bar-title>
+      <v-spacer></v-spacer>
+      <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"  
+        slim @click="onClickTheme"/>
+      <v-btn v-if="user.id != ''" :prepend-icon="'mdi-logout'"  slim @click="user.logout()"/>
+    </v-app-bar>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <component :is="page" />
+  </v-app>
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
