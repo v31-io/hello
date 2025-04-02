@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', () => {
     const name = ref('')
   
     function login(pname) {
-      id.value = 'xyz'
+      id.value = pname
       name.value = pname
     }
 

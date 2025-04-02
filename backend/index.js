@@ -1,13 +1,10 @@
 import { config } from "dotenv";
+config();
 import express from "express";
 import { createServer } from "node:http";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-
-
-config();
-
 
 import cookie from "./services/cookie.js";
 import websocket from "./routes/ws.js";

@@ -3,19 +3,40 @@ import { Server } from 'socket.io'
 
 
 export default function websocket (server) {
-  const io = new Server(server, { path: '/ws/'})
+  const socketUserMap = {}
+
+  const io = new Server(server, { path: '/ws/' })
 
   io.on('connection', (socket) => {
-    const { sessionID } = cookie.parse(socket.handshake.headers.cookie)
-    
-    console.log(`User connected from session ${sessionID}`)
-    
-    socket.emit('chat', {
-      greeting: 'Welcome to the chat room! Please be civil and have fun!'
-    })
+    const id = socket.id
+    console.log(`User connected from ${id}`)
     
     socket.on('disconnect', () => {
-      console.log(`User disconnected from session ${sessionID}`)
+      console.log(`User disconnected from session ${id}`)
+      delete socketUserMap[id]
+    })
+
+    socket.on('register', (user) => {
+      socketUserMap[id] = user
+      console.log(`User ${user} registerd to session ${id}`)
+    })
+
+    socket.on('logout', () => {
+      const user = socketUserMap[id]
+      console.log(`User ${user} de-registerd from session ${id}`)
+      delete socketUserMap[id]
+    })
+
+    socket.emit('chat', {
+      user: 'server',
+      chat: 'Welcome to the chat room! Please be civil and have fun!'
+    })
+
+    socket.on('chat', (message) => {
+      socket.broadcast.emit('chat', {
+        user: socketUserMap[id],
+        chat: message
+      })
     })
   })
 }

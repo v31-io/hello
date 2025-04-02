@@ -14,6 +14,11 @@
   function onClickTheme () {
     theme.value = theme.value === 'light' ? 'dark' : 'light'
   }
+
+  function onClickLogout () {
+    user.logout()
+    server.logout()
+  }
 </script>
 
 <template>
@@ -24,7 +29,7 @@
       <v-spacer></v-spacer>
       <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"  
         slim @click="onClickTheme"/>
-      <v-btn v-if="user.id != ''" :prepend-icon="'mdi-logout'"  slim @click="user.logout()"/>
+      <v-btn v-if="user.id != ''" :prepend-icon="'mdi-logout'"  slim @click="onClickLogout"/>
     </v-app-bar>
 
     <component :is="page" />
