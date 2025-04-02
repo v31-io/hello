@@ -7,6 +7,15 @@ export default function websocket (server) {
 
   const io = new Server(server, { path: '/ws/' })
 
+  io.engine.on("initial_headers", (headers) => {
+    const randomNumber = Math.random().toString()
+    const sessionID = randomNumber.substring(2, randomNumber.length)
+    const sessionCookie = cookie.serialize("sessionID", sessionID, {
+      maxAge: 900000, httpOnly: true
+    });
+    headers["set-cookie"] = sessionCookie;
+  });
+
   io.on('connection', (socket) => {
     const id = socket.id
     console.log(`User connected from ${id}`)
