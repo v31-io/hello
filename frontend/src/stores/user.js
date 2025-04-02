@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', () => {
       name.value = ''
     }
   
-    return { id, name, login, logout}
+    return { id, name, login, logout }
 }, {
   persist: true
 })
