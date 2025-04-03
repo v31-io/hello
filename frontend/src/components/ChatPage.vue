@@ -38,6 +38,15 @@ server.receiveMessageHandler((chat) => {
   scrollTochatListBottom()
 })
 
+// For re-connection scenarios
+server.connectionHandler(() => {
+  if (user.id) {
+    server.register(user.name, (id) => {
+      user.id = id
+    })
+  }
+})
+
 </script>
 
 <template>

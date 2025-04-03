@@ -11,6 +11,11 @@ export const useServerStore = defineStore('server', () => {
       connected.value = true
     })
 
+    // For handling re-connect scenarios
+    function connectionHandler(fn) {
+      socket.on("connect", fn)
+    }
+ 
     socket.on("disconnect", () => {
       connected.value = false
     })
@@ -33,5 +38,5 @@ export const useServerStore = defineStore('server', () => {
       socket.on('chat', fn)
     }
 
-    return { connected, register, logout, sendMessage, receiveMessageHandler }
+    return { connected, register, logout, sendMessage, receiveMessageHandler, connectionHandler }
 })
