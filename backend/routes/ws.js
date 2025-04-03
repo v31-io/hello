@@ -7,13 +7,18 @@ export default function websocket (server) {
 
   const io = new Server(server, { path: '/ws/' })
 
-  io.engine.on("initial_headers", (headers) => {
+  io.engine.on("initial_headers", (headers, req) => {
     const randomNumber = Math.random().toString()
     const sessionID = randomNumber.substring(2, randomNumber.length)
     const sessionCookie = cookie.serialize("sessionID", sessionID, {
       maxAge: 900000, httpOnly: true
     });
     headers["set-cookie"] = sessionCookie;
+
+    // Retain custom header x-server for nginx load balancer
+    if (req.headers['x-server']) {
+      headers['x-server'] = req.headers['x-server']
+    }
   });
 
   io.on('connection', (socket) => {
