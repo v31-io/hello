@@ -24,7 +24,8 @@
 <template>
   <v-app :theme="theme">
     <v-app-bar>
-      <v-btn :prepend-icon="'mdi-circle'" slim size="small" :color="server.connected ? 'success' : 'error'" class="ps-0 pe-0 ms-0"/>
+      <v-btn :prepend-icon="'mdi-circle'" slim size="small" disabled 
+        :color="server.connected ? 'success' : 'error'" class="ps-0 pe-0 ms-0"/>
       <v-app-bar-title class="ms-0">Hello Chat</v-app-bar-title>
       <v-spacer></v-spacer>
       <v-btn :prepend-icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'"  
