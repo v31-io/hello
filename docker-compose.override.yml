@@ -1,10 +1,27 @@
 services:
   backend:
-    ports: 
-    - 4000:4000
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /app
+          ignore:
+            - node_modules/
+    network_mode: service:nginx
 
   frontend:
+    build:
+      context: frontend
+      target: development
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+    network_mode: service:nginx
+
+  nginx:
     ports:
-    - 3000:3000
-    environment:
-      - VITE_BACKEND_URL=backend:4000
+      - 80:80
