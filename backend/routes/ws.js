@@ -2,27 +2,26 @@ import os from 'os'
 import cookie from "cookie"
 import { Server } from 'socket.io'
 import { createAdapter } from "@socket.io/redis-adapter"
+import { getRedisClient } from '../services/redis.js'
 
 
 const HOST = os.hostname().split('-')[0]
 
-export default async function websocket (server, redisClient) {
+export default async function websocket (server) {
   const sessionIDUserMap = {}
 
-  let redisAdapter = null
-  if (redisClient) {
-    const pubClient = redisClient.duplicate()
-    const subClient = redisClient.duplicate()
+  const pubClient = getRedisClient('socketpub')
+  const subClient = getRedisClient('socketsub')
 
-    await Promise.all([
-      pubClient.connect(),
-      subClient.connect()
-    ]);
-    
-    redisAdapter = createAdapter(pubClient, subClient, { key: 'hello:socket.io' })
-  }
+  await Promise.all([
+    pubClient.connect(),
+    subClient.connect()
+  ]);
 
-  const io = new Server(server, { path: '/ws/', adapter: redisAdapter })
+  const io = new Server(server, { 
+    path: '/ws/', 
+    adapter: createAdapter(pubClient, subClient, { key: 'hello:socket.io' }) 
+  })
 
   io.engine.on("initial_headers", (headers, req) => {
     const randomNumber = Math.random().toString()
