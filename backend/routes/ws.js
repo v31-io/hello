@@ -17,7 +17,7 @@ export default function websocket (server) {
     headers["set-cookie"] = sessionCookie;
 
     // custom header x-server for nginx load balancer
-    headers['x-server'] = os.hostname()
+    headers['x-server'] = os.hostname().split('-')[0]
   });
 
   io.on('connection', (socket) => {
