@@ -17,8 +17,9 @@
 
   function onClickRegister() {
     if (userName.value == '') return
-    user.login(userName.value)
-    server.register(userName.value)
+    server.register(userName.value, (id) => {
+      user.login(id, userName.value)
+    })
   }
 </script>
 

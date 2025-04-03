@@ -18,7 +18,7 @@ function sendMessage(pmessage) {
   server.sendMessage(pmessage)
   chats.value.push({
     self: true,
-    user: user.id,
+    user: user.name,
     chat: pmessage
   })
   message.value = ''

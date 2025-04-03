@@ -3,7 +3,7 @@ import { Server } from 'socket.io'
 
 
 export default function websocket (server) {
-  const socketUserMap = {}
+  const sessionIDUserMap = {}
 
   const io = new Server(server, { path: '/ws/' })
 
@@ -17,33 +17,35 @@ export default function websocket (server) {
   });
 
   io.on('connection', (socket) => {
-    const id = socket.id
-    console.log(`User connected from ${id}`)
+    const socketID = socket.id
+    const sessionID = cookie.parse(socket.handshake.headers.cookie)['sessionID']
+    console.log(`User ${sessionID} connected from ${socketID}`)
     
     socket.on('disconnect', () => {
-      console.log(`User disconnected from session ${id}`)
-      delete socketUserMap[id]
+      console.log(`User ${sessionID} disconnected from ${socketID}`)
+      delete sessionIDUserMap[sessionID]
     })
 
-    socket.on('register', (user) => {
-      socketUserMap[id] = user
-      console.log(`User ${user} registerd to session ${id}`)
+    socket.on('register', async (user, ack) => {
+      sessionIDUserMap[sessionID] = user
+      console.log(`User ${sessionID}:${user} registerd from ${socketID}`)
+      await ack(sessionID)
+
+      socket.emit('chat', {
+        user: 'server',
+        chat: 'Welcome to the chat room! Please be civil and have fun!'
+      })
     })
 
     socket.on('logout', () => {
-      const user = socketUserMap[id]
-      console.log(`User ${user} de-registerd from session ${id}`)
-      delete socketUserMap[id]
-    })
-
-    socket.emit('chat', {
-      user: 'server',
-      chat: 'Welcome to the chat room! Please be civil and have fun!'
+      const user = sessionIDUserMap[sessionID]
+      console.log(`User ${sessionID}:${user} deregisterd from ${socketID}`)
+      delete sessionIDUserMap[sessionID]
     })
 
     socket.on('chat', (message) => {
       socket.broadcast.emit('chat', {
-        user: socketUserMap[id],
+        user: sessionIDUserMap[sessionID],
         chat: message
       })
     })

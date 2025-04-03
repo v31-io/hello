@@ -15,9 +15,9 @@ export const useServerStore = defineStore('server', () => {
       connected.value = false
     })
 
-    function register(user) {
+    function register(user, ack) {
       socket.connect()
-      socket.emit('register', user)
+      socket.emit('register', user, ack)
     }
 
     function logout() {
