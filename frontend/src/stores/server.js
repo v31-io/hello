@@ -25,8 +25,8 @@ export const useServerStore = defineStore('server', () => {
       socket.disconnect()
     }
 
-    function sendMessage(message) {
-      socket.emit('chat', message)
+    function sendMessage(message, ack) {
+      socket.emit('chat', message, ack)
     }
 
     function receiveMessageHandler(fn) {

@@ -47,11 +47,12 @@ export default function websocket (server) {
       delete sessionIDUserMap[sessionID]
     })
 
-    socket.on('chat', (message) => {
+    socket.on('chat', (message, ack) => {
       socket.broadcast.emit('chat', {
         user: sessionIDUserMap[sessionID],
         chat: message
       })
+      ack()
     })
   })
 }

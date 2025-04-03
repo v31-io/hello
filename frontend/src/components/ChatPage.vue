@@ -15,17 +15,25 @@ async function scrollTochatListBottom() {
 }
 
 function sendMessage(pmessage) {
-  server.sendMessage(pmessage)
-  chats.value.push({
+  const chat = ref({
     self: true,
     user: user.name,
-    chat: pmessage
+    chat: pmessage,
+    loading: true
   })
+
+  server.sendMessage(pmessage, () => {
+    chat.value.loading = false
+  })
+  
+  chats.value.push(chat.value)
   message.value = ''
   scrollTochatListBottom()
 } 
 
 server.receiveMessageHandler((chat) => {
+  chat.self = false
+  chat.loading = false
   chats.value.push(chat)
   scrollTochatListBottom()
 })
@@ -41,6 +49,9 @@ server.receiveMessageHandler((chat) => {
           :title="chat.user"
           class="mb-4">
           <v-card-text>{{chat.chat}}</v-card-text>
+          <v-card-actions v-if="chat.loading">
+            <v-btn :prepend-icon="'mdi-check'" slim size="x-small" :loading="chat.loading" disabled class="ps-0 pe-0 ms-0"/>
+          </v-card-actions>
         </v-card>
         <v-spacer ref="chatListBottom" />
       </v-col>

@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import loginImage from '@/assets/login.svg'
   import { useUserStore } from '@/stores/user'
   import { useServerStore } from '@/stores/server'
@@ -7,6 +7,8 @@
   const user = useUserStore()
   const server = useServerStore()
   const userName = ref('')
+  const clickedRegister = ref(false)
+  const registerDisabled = computed(() => (userName.value == '') || clickedRegister.value)
 
   const rules = [
     value => {
@@ -17,6 +19,8 @@
 
   function onClickRegister() {
     if (userName.value == '') return
+
+    clickedRegister.value = true
     server.register(userName.value, (id) => {
       user.login(id, userName.value)
     })
@@ -31,7 +35,7 @@
           <v-row>
             <v-text-field v-model="userName" :rules="rules" label="User Name" 
               @keypress.enter="onClickRegister" class="mb-2" />
-            <v-btn block @click="onClickRegister" :disabled="userName == ''">Register</v-btn>
+            <v-btn block @click="onClickRegister" :disabled="registerDisabled" :loading="clickedRegister">Register</v-btn>
           </v-row>
         </v-col>
     </v-container>
