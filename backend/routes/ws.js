@@ -4,6 +4,8 @@ import { Server } from 'socket.io'
 import { createAdapter } from "@socket.io/redis-adapter"
 
 
+const HOST = os.hostname().split('-')[0]
+
 export default async function websocket (server, redisClient) {
   const sessionIDUserMap = {}
 
@@ -31,7 +33,7 @@ export default async function websocket (server, redisClient) {
     headers["set-cookie"] = sessionCookie
 
     // custom header x-server for nginx load balancer
-    headers['x-server'] = os.hostname().split('-')[0]
+    headers['x-server'] = HOST
   })
 
   io.on('connection', (socket) => {
@@ -51,7 +53,8 @@ export default async function websocket (server, redisClient) {
 
       socket.emit('chat', {
         user: 'server',
-        chat: 'Welcome to the chat room! Please be civil and have fun!'
+        chat: 'Welcome to the chat room! Please be civil and have fun!',
+        host: HOST
       })
     })
 
@@ -64,7 +67,8 @@ export default async function websocket (server, redisClient) {
     socket.on('chat', (message, ack) => {
       socket.broadcast.emit('chat', {
         user: sessionIDUserMap[sessionID],
-        chat: message
+        chat: message,
+        host: HOST
       })
       ack()
     })
