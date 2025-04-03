@@ -1,24 +1,38 @@
 import os from 'os'
 import cookie from "cookie"
 import { Server } from 'socket.io'
+import { createAdapter } from "@socket.io/redis-adapter"
 
 
-export default function websocket (server) {
+export default async function websocket (server, redisClient) {
   const sessionIDUserMap = {}
 
-  const io = new Server(server, { path: '/ws/' })
+  let redisAdapter = null
+  if (redisClient) {
+    const pubClient = redisClient.duplicate()
+    const subClient = redisClient.duplicate()
+
+    await Promise.all([
+      pubClient.connect(),
+      subClient.connect()
+    ]);
+    
+    redisAdapter = createAdapter(pubClient, subClient, { key: 'hello:socket.io' })
+  }
+
+  const io = new Server(server, { path: '/ws/', adapter: redisAdapter })
 
   io.engine.on("initial_headers", (headers, req) => {
     const randomNumber = Math.random().toString()
     const sessionID = randomNumber.substring(2, randomNumber.length)
     const sessionCookie = cookie.serialize("sessionID", sessionID, {
       maxAge: 900000, httpOnly: true
-    });
-    headers["set-cookie"] = sessionCookie;
+    })
+    headers["set-cookie"] = sessionCookie
 
     // custom header x-server for nginx load balancer
     headers['x-server'] = os.hostname().split('-')[0]
-  });
+  })
 
   io.on('connection', (socket) => {
     const socketID = socket.id
