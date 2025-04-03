@@ -1,12 +1,18 @@
 <script setup>
 import { useUserStore } from '@/stores/user';
 import { useServerStore } from '@/stores/server';
-import { ref } from 'vue';
+import { ref, useTemplateRef, nextTick } from 'vue';
 
+const chatListBottom = useTemplateRef('chatListBottom')
 const message = ref('')
 const chats = ref([])
 const user = useUserStore()
 const server = useServerStore()
+
+async function scrollTochatListBottom() {
+  await nextTick()
+  chatListBottom.value.$el.scrollIntoView({ behavior: 'smooth' })
+}
 
 function sendMessage(pmessage) {
   server.sendMessage(pmessage)
@@ -16,9 +22,13 @@ function sendMessage(pmessage) {
     chat: pmessage
   })
   message.value = ''
-}
+  scrollTochatListBottom()
+} 
 
-server.receiveMessageHandler((chat) => chats.value.push(chat))
+server.receiveMessageHandler((chat) => {
+  chats.value.push(chat)
+  scrollTochatListBottom()
+})
 
 </script>
 
@@ -32,6 +42,7 @@ server.receiveMessageHandler((chat) => chats.value.push(chat))
           class="mb-4">
           <v-card-text>{{chat.chat}}</v-card-text>
         </v-card>
+        <v-spacer ref="chatListBottom" />
       </v-col>
       <v-footer app>
         <v-text-field
