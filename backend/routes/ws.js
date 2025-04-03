@@ -1,3 +1,4 @@
+import os from 'os'
 import cookie from "cookie"
 import { Server } from 'socket.io'
 
@@ -15,10 +16,8 @@ export default function websocket (server) {
     });
     headers["set-cookie"] = sessionCookie;
 
-    // Retain custom header x-server for nginx load balancer
-    if (req.headers['x-server']) {
-      headers['x-server'] = req.headers['x-server']
-    }
+    // custom header x-server for nginx load balancer
+    headers['x-server'] = os.hostname()
   });
 
   io.on('connection', (socket) => {
