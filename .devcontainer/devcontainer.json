@@ -15,12 +15,10 @@
 			"moby": "true"
 		},
 		"ghcr.io/devcontainers/features/node": {},
-		// Use `tailscale up --accept-routes` to enable tailscale
-		"ghcr.io/tailscale/codespace/tailscale": {}
+		"ghcr.io/tailscale/codespace/tailscale": {
+      // Use `tailscale up --accept-routes` to enable tailscale
+    }
 	},
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "sudo apt-get -qq update && sudo apt-get install -y -qq yq",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -28,7 +26,9 @@
 			"extensions": [
 				"mhutchie.git-graph",
 				"mutantdino.resourcemonitor",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "Tailscale.vscode-tailscale"
 			]
 		}
 	}

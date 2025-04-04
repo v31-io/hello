@@ -4,7 +4,7 @@ services:
     restart: always
     environment:
       - REDIS_HOST=${REDIS_HOST}
-      - REDIS_USER=hello
+      - REDIS_USER=${REDIS_USER}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/ || exit 1" ]
