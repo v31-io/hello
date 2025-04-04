@@ -36,6 +36,7 @@ server.receiveMessageHandler((chat) => {
   chat.loading = false
   chats.value.push(chat)
   scrollTochatListBottom()
+  server.setName(chat.host)
 })
 
 // For re-connection scenarios

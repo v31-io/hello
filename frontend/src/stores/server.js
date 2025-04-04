@@ -5,6 +5,8 @@ import { io } from 'socket.io-client'
 
 export const useServerStore = defineStore('server', () => {
     const socket = io({ path: '/api/ws/', transports: ['websocket'], autoConnect: false })
+    
+    const name = ref('')
     const connected = ref(false) 
   
     socket.on("connect", () => {
@@ -18,6 +20,7 @@ export const useServerStore = defineStore('server', () => {
  
     socket.on("disconnect", () => {
       connected.value = false
+      name.value = ''
     })
 
     function register(user, ack) {
@@ -38,5 +41,9 @@ export const useServerStore = defineStore('server', () => {
       socket.on('chat', fn)
     }
 
-    return { connected, register, logout, sendMessage, receiveMessageHandler, connectionHandler }
+    function setName(pname) {
+      name.value = `${socket.id}@${pname}`
+    }
+
+    return { name, connected, register, logout, sendMessage, receiveMessageHandler, connectionHandler, setName }
 })
