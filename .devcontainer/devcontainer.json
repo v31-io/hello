@@ -28,7 +28,8 @@
 				"mutantdino.resourcemonitor",
 				"github.vscode-github-actions",
         "ms-azuretools.vscode-docker",
-        "Tailscale.vscode-tailscale"
+        "Tailscale.vscode-tailscale",
+        "Vue.volar"
 			]
 		}
 	}
