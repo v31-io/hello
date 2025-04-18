@@ -1,4 +1,5 @@
 <script setup>
+import { useKeycloak } from '@dsb-norge/vue-keycloak-js'
 import { useUserStore } from '@/stores/user';
 import { useServerStore } from '@/stores/server';
 import { ref, useTemplateRef, nextTick } from 'vue';
@@ -6,6 +7,7 @@ import { ref, useTemplateRef, nextTick } from 'vue';
 const chatListBottom = useTemplateRef('chatListBottom')
 const message = ref('')
 const chats = ref([])
+const { userName, token } = useKeycloak()
 const user = useUserStore()
 const server = useServerStore()
 
@@ -42,8 +44,8 @@ server.receiveMessageHandler((chat) => {
 // For re-connection scenarios
 server.connectionHandler(() => {
   if (user.id) {
-    server.register(user.name, (id) => {
-      user.id = id
+    server.register(userName, token, (id) => {
+      user.login(id, userName)
     })
   }
 })
