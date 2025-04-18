@@ -16,7 +16,7 @@ This is a docker compose application with components -
   The `&hello:socket.io#/#*` channel is what is required by the redis adapter.
   Redis password hash can be generated in bash like -
   ```bash
-  REDIS_PASSWORD_HASH=$(echo -n "$REDIS_PASSWORD"} | sha256sum | head -c 64)
+  REDIS_USER_HELLO_PASSWORD_HASH=$(echo -n "$REDIS_PASSWORD"} | sha256sum | head -c 64)
   ```
 
 ## Local Development
@@ -26,4 +26,4 @@ Maintain the redis credentials in the `sample.env` file (rename it to `.env`). A
 ```
 docker compose up --build
 ``` 
-Watch and local development parameters are enabled in the `docker-compose.override.yml` file. The applciation is served on `http://localhost:80`.
+Watch and local development parameters are enabled in the `docker-compose.override.yml` file. The applciation is served on `http://localhost:80`. A dummy redis instance is also created.

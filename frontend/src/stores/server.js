@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { io } from 'socket.io-client'
@@ -7,6 +8,7 @@ export const useServerStore = defineStore('server', () => {
     const socket = io({ path: '/api/ws/', transports: ['websocket'], autoConnect: false })
     
     const name = ref('')
+    const token = ref('')
     const connected = ref(false) 
   
     socket.on("connect", () => {
@@ -23,7 +25,13 @@ export const useServerStore = defineStore('server', () => {
       name.value = ''
     })
 
-    function register(user, ack) {
+    async function register(user, ptoken, ack) {
+      token.value = ptoken
+      await axios.get('/api/user', {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
       socket.connect()
       socket.emit('register', user, ack)
     }

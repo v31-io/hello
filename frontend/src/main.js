@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
+import VueKeycloak from '@dsb-norge/vue-keycloak-js'
 import '@mdi/font/css/materialdesignicons.css'
-
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
@@ -19,7 +19,20 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App)
-  .use(pinia)  
-  .use(vuetify)
-  .mount('#app')
+const app = createApp(App)
+
+ app.use(VueKeycloak, {
+  init: {
+    onLoad: 'login-required',
+    checkLoginIframe: false
+  },
+  config: {
+    url: import.meta.env.VITE_KEYCLOAK_URL,
+    realm: 'default',
+    clientId: 'hello-chat'
+  },
+  onInitError: (error) => console.error('Keycloak initialization error:', error),
+  onReady: () => app.mount('#app')
+})
+app.use(pinia)  
+app.use(vuetify)
