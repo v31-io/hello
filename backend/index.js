@@ -35,7 +35,7 @@ app.use(cookie)
 websocket(server)
 
 app.use("/", rootRouter)
-app.use("/user", keycloak.protect(), userRouter)
+app.use("/user", keycloak.protect('access'), userRouter)
 
 server.listen(4000, () => {
   console.log("listening for requests on port 4000")

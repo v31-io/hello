@@ -32,7 +32,12 @@ const app = createApp(App)
     clientId: 'hello-chat'
   },
   onInitError: (error) => console.error('Keycloak initialization error:', error),
-  onReady: () => app.mount('#app')
+  onReady: (keycloak) => {
+    if (!keycloak.hasResourceRole('access')) {
+      keycloak.logout()
+    }
+    app.mount('#app')
+  }
 })
 app.use(pinia)  
 app.use(vuetify)
