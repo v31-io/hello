@@ -19,6 +19,8 @@ This is a docker compose application with components -
   REDIS_USER_HELLO_PASSWORD_HASH=$(echo -n "$REDIS_PASSWORD"} | sha256sum | head -c 64)
   ```
 
+- External services - [Keycloak](https://www.keycloak.org/) is used as an IDP.
+
 ## Local Development
 
 A `.devcontainer` configuration is enabled which provides a docker environment.
