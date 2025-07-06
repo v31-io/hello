@@ -35,6 +35,14 @@ websocket(server)
 app.use("/", rootRouter)
 app.use("/user", keycloak.protect('access'), userRouter)
 
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error"
+  })
+})
+
 server.listen(4000, () => {
   console.log("listening for requests on port 4000")
 })
