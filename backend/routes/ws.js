@@ -1,5 +1,4 @@
 import os from 'os'
-import cookie from "cookie"
 import { Server } from 'socket.io'
 import { createAdapter } from "@socket.io/redis-adapter"
 import { getRedisClient } from '../services/redis.js'
@@ -8,7 +7,7 @@ import { getRedisClient } from '../services/redis.js'
 const HOST = os.hostname().split('-')[0]
 
 export default async function websocket (server) {
-  const sessionIDUserMap = {}
+  const socketIDUserMap = {}
 
   const pubClient = getRedisClient('socketpub')
   const subClient = getRedisClient('socketsub')
@@ -23,32 +22,24 @@ export default async function websocket (server) {
     adapter: createAdapter(pubClient, subClient, { key: 'hello:socket.io' }) 
   })
 
-  io.engine.on("initial_headers", (headers, req) => {
-    const randomNumber = Math.random().toString()
-    const sessionID = randomNumber.substring(2, randomNumber.length)
-    const sessionCookie = cookie.serialize("sessionID", sessionID, {
-      maxAge: 900000, httpOnly: true
-    })
-    headers["set-cookie"] = sessionCookie
-
-    // custom header x-server for nginx load balancer
+  io.engine.on("initial_headers", (headers) => {
+    // custom header x-server for nginx load balancer sticky session
     headers['x-server'] = HOST
   })
 
   io.on('connection', (socket) => {
     const socketID = socket.id
-    const sessionID = cookie.parse(socket.handshake.headers.cookie)['sessionID']
-    console.log(`User ${sessionID} connected from ${socketID}`)
+    console.log(`User connected from ${socketID}`)
     
     socket.on('disconnect', () => {
-      console.log(`User ${sessionID} disconnected from ${socketID}`)
-      delete sessionIDUserMap[sessionID]
+      console.log(`User disconnected from ${socketID}`)
+      delete socketIDUserMap[socketID]
     })
 
     socket.on('register', async (user, ack) => {
-      sessionIDUserMap[sessionID] = user
-      console.log(`User ${sessionID}:${user} registerd from ${socketID}`)
-      await ack(sessionID)
+      socketIDUserMap[socketID] = user
+      console.log(`User ${user} registerd from ${socketID}`)
+      await ack(socketID)
 
       socket.emit('chat', {
         user: 'server',
@@ -58,14 +49,14 @@ export default async function websocket (server) {
     })
 
     socket.on('logout', () => {
-      const user = sessionIDUserMap[sessionID]
-      console.log(`User ${sessionID}:${user} deregisterd from ${socketID}`)
-      delete sessionIDUserMap[sessionID]
+      const user = socketIDUserMap[socketID]
+      console.log(`User ${user} deregisterd from ${socketID}`)
+      delete socketIDUserMap[socketID]
     })
 
     socket.on('chat', (message, ack) => {
       socket.broadcast.emit('chat', {
-        user: sessionIDUserMap[sessionID],
+        user: socketIDUserMap[socketID],
         chat: message,
         host: HOST
       })
