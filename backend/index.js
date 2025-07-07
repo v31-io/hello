@@ -33,7 +33,7 @@ app.use(cookieParser())
 websocket(server)
 
 app.use("/", rootRouter)
-app.use("/user", keycloak.protect('access'), userRouter)
+app.use("/user", keycloak.protect(), userRouter)
 
 // Global error handler
 app.use((err, req, res, next) => {
