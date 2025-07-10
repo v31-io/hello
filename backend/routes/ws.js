@@ -6,9 +6,7 @@ import { getRedisClient } from '../services/redis.js'
 
 const HOST = os.hostname().split('-')[0]
 
-export default async function websocket (server) {
-  const socketIDUserMap = {}
-
+export default async function websocket (server, authMiddleware) {
   const pubClient = getRedisClient('socketpub')
   const subClient = getRedisClient('socketsub')
 
@@ -19,7 +17,7 @@ export default async function websocket (server) {
 
   const io = new Server(server, { 
     path: '/ws/', 
-    adapter: createAdapter(pubClient, subClient, { key: 'hello:socket.io' }) 
+    adapter: createAdapter(pubClient, subClient, { key: `${process.env.SERVICE}:socket.io` }) 
   })
 
   io.engine.on("initial_headers", (headers) => {
@@ -27,40 +25,28 @@ export default async function websocket (server) {
     headers['x-server'] = HOST
   })
 
+  // Middleware to authenticate the user
+  io.engine.use(authMiddleware)
+
   io.on('connection', (socket) => {
     const socketID = socket.id
-    console.log(`User connected from ${socketID}`)
+    const user = socket.request.user.preferred_username
+    console.log(`User ${user} connected from ${socketID}`)
     
     socket.on('disconnect', () => {
-      console.log(`User disconnected from ${socketID}`)
-      delete socketIDUserMap[socketID]
-    })
-
-    socket.on('register', async (user, ack) => {
-      socketIDUserMap[socketID] = user
-      console.log(`User ${user} registerd from ${socketID}`)
-      await ack(socketID)
-
-      socket.emit('chat', {
-        user: 'server',
-        chat: 'Welcome to the chat room! Please be civil and have fun!',
-        host: HOST
-      })
-    })
-
-    socket.on('logout', () => {
-      const user = socketIDUserMap[socketID]
-      console.log(`User ${user} deregisterd from ${socketID}`)
-      delete socketIDUserMap[socketID]
+      console.log(`User ${user} disconnected from ${socketID}`)
     })
 
     socket.on('chat', (message, ack) => {
       socket.broadcast.emit('chat', {
-        user: socketIDUserMap[socketID],
-        chat: message,
-        host: HOST
+        user: user,
+        chat: message
       })
       ack()
+    })
+
+    socket.emit('welcome', {
+      host: HOST
     })
   })
 }
