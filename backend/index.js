@@ -6,7 +6,7 @@ import cors from "cors"
 import morgan from "morgan"
 import cookieParser from "cookie-parser"
 
-import keycloak from "./services/keycloak.js"
+import { keycloak, keycloakSocket } from "./services/keycloak.js"
 import websocket from "./routes/ws.js"
 import rootRouter from "./routes/root.js"
 import userRouter from "./routes/user.js"
@@ -19,7 +19,7 @@ app.use(cors())
 app.use(morgan("combined"))
 app.use(cookieParser())
 
-websocket(server)
+websocket(server, keycloakSocket(['access']))
 
 app.use("/", rootRouter)
 app.use("/user", keycloak(['access']), userRouter)

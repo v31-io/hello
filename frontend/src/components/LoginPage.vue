@@ -2,16 +2,12 @@
   import { useKeycloak } from '@dsb-norge/vue-keycloak-js'
 
   import loginImage from '@/assets/login.svg'
-  import { useUserStore } from '@/stores/user'
   import { useServerStore } from '@/stores/server'
 
-  const { userName, token } = useKeycloak()
-  const user = useUserStore()
+  const { userName } = useKeycloak()
   const server = useServerStore()
 
-  server.register(userName, token, (id) => {
-    user.login(id, userName)
-  })
+  server.login()
 </script>
 
 <template>

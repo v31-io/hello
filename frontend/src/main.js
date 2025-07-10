@@ -29,7 +29,7 @@ const app = createApp(App)
   config: {
     url: import.meta.env.VITE_KEYCLOAK_URL,
     realm: 'default',
-    clientId: 'hello-chat'
+    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
   },
   onInitError: (error) => console.error('Keycloak initialization error:', error),
   onReady: (keycloak) => {

@@ -1,14 +1,15 @@
 <script setup>
-import { useKeycloak } from '@dsb-norge/vue-keycloak-js'
-import { useUserStore } from '@/stores/user';
 import { useServerStore } from '@/stores/server';
 import { ref, useTemplateRef, nextTick } from 'vue';
 
 const chatListBottom = useTemplateRef('chatListBottom')
 const message = ref('')
-const chats = ref([])
-const { userName, token } = useKeycloak()
-const user = useUserStore()
+const chats = ref([{
+  self: false,
+  loading: false,
+  user: 'Server',
+  chat: 'Welcome to the chat room! Please be civil and have fun!'
+}])
 const server = useServerStore()
 
 async function scrollTochatListBottom() {
@@ -19,7 +20,7 @@ async function scrollTochatListBottom() {
 function sendMessage(pmessage) {
   const chat = ref({
     self: true,
-    user: user.name,
+    user: server.username,
     chat: pmessage,
     loading: true
   })
@@ -38,18 +39,14 @@ server.receiveMessageHandler((chat) => {
   chat.loading = false
   chats.value.push(chat)
   scrollTochatListBottom()
-  server.setName(chat.host)
 })
 
 // For re-connection scenarios
 server.connectionHandler(() => {
-  if (user.id) {
-    server.register(userName, token, (id) => {
-      user.login(id, userName)
-    })
+  if (server.username) {
+    server.login()
   }
 })
-
 </script>
 
 <template>

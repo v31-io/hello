@@ -1,57 +1,71 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { io } from 'socket.io-client'
 
 
 export const useServerStore = defineStore('server', () => {
-    const socket = io({ path: '/api/ws/', transports: ['websocket'], autoConnect: false })
-    
-    const name = ref('')
     const token = ref('')
-    const connected = ref(false) 
+    const username = ref('')
+    const hostname = ref('')
+    const connected = ref(false)   
+    const socket = ref('')
   
-    socket.on("connect", () => {
-      connected.value = true
-    })
+    const name = computed(() => `${username.value}:${socket.value.id}@${hostname.value}`)
+
+    function init(pUsername, pToken) {
+      token.value = pToken
+      username.value = pUsername
+
+      socket.value = io({ 
+        path: '/api/ws/', 
+        autoConnect: false,
+        extraHeaders: {
+          Authorization: `Bearer ${token.value}`
+        }
+      })
+
+      socket.value.on("connect", () => {
+        connected.value = true
+      })
+
+      socket.value.on("disconnect", () => {
+        connected.value = false
+      })
+
+      socket.value.on("welcome", ({ host }) => {
+        hostname.value = host
+      })
+    }
 
     // For handling re-connect scenarios
     function connectionHandler(fn) {
-      socket.on("connect", fn)
+      socket.value.on("connect", fn)
     }
- 
-    socket.on("disconnect", () => {
-      connected.value = false
-      name.value = ''
-    })
 
-    async function register(user, ptoken, ack) {
-      token.value = ptoken
+    async function login() {
       await axios.get('/api/user', {
         headers: {
           Authorization: `Bearer ${token.value}`
         }
       })
-      socket.connect()
-      socket.emit('register', user, ack)
+      socket.value.connect()
     }
 
     function logout() {
-      socket.emit('logout')
-      socket.disconnect()
+      socket.value.disconnect()
     }
 
     function sendMessage(message, ack) {
-      socket.emit('chat', message, ack)
+      socket.value.emit('chat', message, ack)
     }
 
     function receiveMessageHandler(fn) {
-      socket.on('chat', fn)
+      socket.value.on('chat', fn)
     }
 
-    function setName(pname) {
-      name.value = `${socket.id}@${pname}`
+    return { 
+      username, name, connected,
+      init, login, logout, sendMessage, receiveMessageHandler, connectionHandler 
     }
-
-    return { name, connected, register, logout, sendMessage, receiveMessageHandler, connectionHandler, setName }
 })

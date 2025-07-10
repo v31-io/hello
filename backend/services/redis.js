@@ -20,8 +20,8 @@ export function getRedisClient (label = 'default') {
     console.log(`Client ${label} connected to Redis from ${os.hostname()}.`)
   
     // Test connection
-    await client.lPush("hello:connection_log", `${os.hostname()}:${new Date().toUTCString()}`);
-    let value = await client.lRange("hello:connection_log", 0, 0);
+    await client.lPush(`${process.env.SERVICE}:connection_log`, `${os.hostname()}:${new Date().toUTCString()}`);
+    let value = await client.lRange(`${process.env.SERVICE}:connection_log`, 0, 0);
     console.log(`Client ${label} connection test value from Redis: ${value}`);
   })
   
