@@ -8,8 +8,6 @@ services:
           ignore:
             - node_modules/
     network_mode: service:nginx
-    environment:
-      - SERVICE=${SERVICE}
     depends_on:
       - redis
 
